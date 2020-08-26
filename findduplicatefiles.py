@@ -27,11 +27,38 @@ def groupDuplicateSize(allFiles):
 #use hashing to compare files with identical sizes
 def searchRealDuplicates(onlyDuplicates):
     #WRITE SOME CODE HERE
-    return 0
+    duplicates = list()
+    for files in onlyDuplicates.values(): #for each size that has many files
+        temp = {}
+        for f in files: #for each file of that size
+            temp[f] = hashFile(f) #get hash of that file
+        rev_temp ={}
+        for fileN, hashvalue in temp.items(): #reverse the dict to group by hash value
+            rev_temp.setdefault(hashvalue, set()).add(fileN)
+        for files in rev_temp.values():
+            if (len(files) > 1): #only add files that have identical hashes
+                duplicates.append(files)   
+
+    return duplicates
 
 def hashFile(fileName):
     buffer_size = 65536 #is this good idk?
 
+    sha256 = hashlib.sha256()
+    with open(fileName, 'rb') as fi:
+        while True:
+            data =fi.read(buffer_size)
+            if not data:
+                break
+            sha256.update(data)
+    return sha256.hexdigest()
+
+def printDuplicates(duplicates):
+    for group in duplicates:
+        print("These files are duplicates:\n")
+        for f in group:
+            print(f)
+        print("\n")    
 
 
 
@@ -41,12 +68,14 @@ def main():
     # for elem in allfile:
     #     print(elem)
 
-    print(allfile)
+   # print(allfile)
 
     grouped = groupDuplicateSize(allfile)
-
-    print(grouped)
     
+
+   # print(grouped)
+    duplicates = searchRealDuplicates(grouped)
+    printDuplicates(duplicates)
 
 
 if __name__ == "__main__":
