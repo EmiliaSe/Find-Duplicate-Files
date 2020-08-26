@@ -26,7 +26,6 @@ def groupDuplicateSize(allFiles):
 
 #use hashing to compare files with identical sizes
 def searchRealDuplicates(onlyDuplicates):
-    #WRITE SOME CODE HERE
     duplicates = list()
     for files in onlyDuplicates.values(): #for each size that has many files
         temp = {}
@@ -38,21 +37,22 @@ def searchRealDuplicates(onlyDuplicates):
         for files in rev_temp.values():
             if (len(files) > 1): #only add files that have identical hashes
                 duplicates.append(files)   
-
     return duplicates
 
+#open file and perform md5 hash
 def hashFile(fileName):
-    buffer_size = 65536 #is this good idk?
+    buffer_size = 65536 
 
-    sha256 = hashlib.sha256()
+    hasher = hashlib.md5()
     with open(fileName, 'rb') as fi:
         while True:
             data =fi.read(buffer_size)
             if not data:
                 break
-            sha256.update(data)
-    return sha256.hexdigest()
+            hasher.update(data)
+    return hasher.hexdigest()
 
+#formatting of output
 def printDuplicates(duplicates):
     for group in duplicates:
         print("These files are duplicates:\n")
@@ -63,17 +63,13 @@ def printDuplicates(duplicates):
 
 
 def main():
-    dirName ='/Users/emilia/Documents/learningpython/testingDuplicates'
+    dirName =input("Please enter the full path of directory to search: ")
+
+    while not(os.path.isdir(dirName)):
+        dirName = input("Please enter a valid directory: ")
+
     allfile = getAllFiles(dirName)
-    # for elem in allfile:
-    #     print(elem)
-
-   # print(allfile)
-
     grouped = groupDuplicateSize(allfile)
-    
-
-   # print(grouped)
     duplicates = searchRealDuplicates(grouped)
     printDuplicates(duplicates)
 
